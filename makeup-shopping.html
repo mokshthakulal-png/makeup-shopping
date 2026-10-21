@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glow Beauty - Makeup Store</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#fff7fa;color:#39232d}
+header{background:#f4c2d4;padding:20px 7%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:26px;font-weight:bold;color:#922b58}
+nav a{margin:8px;color:#54243a;text-decoration:none;font-weight:bold}
+.hero{text-align:center;padding:65px 20px;background:linear-gradient(135deg,#ffe0ed,#fff0e6)}
+.hero h1{font-size:clamp(32px,6vw,50px);color:#9b315d}
+.hero p{font-size:17px;line-height:1.6}
+button,.shop{background:#a83265;color:white;padding:12px 18px;border:0;border-radius:25px;cursor:pointer;text-decoration:none;display:inline-block}
+section{padding:40px 7%}
+h2{text-align:center;color:#8b2854;margin-bottom:25px}
+.search{text-align:center;margin-bottom:20px}
+input{padding:13px;width:min(100%,350px);border:1px solid #dda9bf;border-radius:25px;font-size:15px}
+.filters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:20px}
+.filters button{background:white;color:#922b58;border:1px solid #dba1ba}
+.filters button.active{background:#a83265;color:white}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:22px}
+.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 4px 14px #8b28541a}
+.card img{width:100%;height:220px;object-fit:cover;background:#fce5ee}
+.details{padding:16px}
+.details h3{margin:5px 0 10px}
+.category{color:#856675;font-size:13px}
+.price{font-size:20px;color:#a83265;font-weight:bold;margin:14px 0}
+.shop{width:100%;text-align:center}
+.about{text-align:center;background:#fde7ef;line-height:1.8}
+footer{text-align:center;background:#512b3b;color:white;padding:25px;line-height:1.8}
+#message{text-align:center;color:#922b58}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">💄 Glow Beauty</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#products">Shop</a>
+    <a href="#about">About</a>
+  </nav>
+</header>
+
+<div class="hero" id="home">
+  <h1>Your Beauty, Your Glow ✨</h1>
+  <p>Discover your favourite makeup essentials.<br>
+  A little colour, a lot of confidence!</p>
+  <a class="shop" href="#products">Explore Makeup</a>
+</div>
+
+<section id="products">
+  <h2>Our Makeup Collection 💕</h2>
+
+  <div class="search">
+    <input id="search" type="search" placeholder="Search makeup products...">
+  </div>
+
+  <div class="filters">
+    <button class="active" data-cat="All">All</button>
+    <button data-cat="Lips">Lipstick</button>
+    <button data-cat="Face">Face</button>
+    <button data-cat="Eyes">Eyes</button>
+    <button data-cat="Nails">Nails</button>
+  </div>
+
+  <div class="products" id="productList"></div>
+  <p id="message"></p>
+</section>
+
+<section class="about" id="about">
+  <h2>About Glow Beauty</h2>
+  <p>Welcome to Glow Beauty, your destination for discovering makeup favourites, beauty essentials and everyday glam.</p>
+  <p>Browse products and visit the retailer to check current prices and availability.</p>
+</section>
+
+<footer>
+  <h3>💗 Glow Beauty</h3>
+  <p>Your beauty journey starts here.</p>
+  <p>Product prices are illustrative. Check retailer listings before buying.</p>
+  <p>© 2026 Glow Beauty</p>
+</footer>
+
+<script>
+const products = [
+  {name:"Rose Pink Lipstick",cat:"Lips",price:299,emoji:"💄",image:"https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80"},
+  {name:"Everyday Foundation",cat:"Face",price:499,emoji:"🧴",image:"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=600&q=80"},
+  {name:"Volume Mascara",cat:"Eyes",price:349,emoji:"👁️",image:"https://images.unsplash.com/photo-1631214540242-5b7b9b7b0b3a?auto=format&fit=crop&w=600&q=80"},
+  {name:"Soft Pink Blush",cat:"Face",price:399,emoji:"🌸",image:"https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80"},
+  {name:"Nude Lip Gloss",cat:"Lips",price:249,emoji:"💋",image:"https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80"},
+  {name:"Eye Shadow Palette",cat:"Eyes",price:599,emoji:"🎨",image:"https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=600&q=80"},
+  {name:"Nail Polish",cat:"Nails",price:199,emoji:"💅",image:"https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=600&q=80"},
+  {name:"Makeup Essentials",cat:"Face",price:699,emoji:"🪞",image:"https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=600&q=80"}
+];
+
+let selected = "All";
+const list = document.getElementById("productList");
+const search = document.getElementById("search");
+const message = document.getElementById("message");
+
+function render(){
+  const term = search.value.toLowerCase();
+  const shown = products.filter(p =>
+    (selected === "All" || p.cat === selected) &&
+    p.name.toLowerCase().includes(term)
+  );
+
+  list.innerHTML = shown.map(p => `
+    <article class="card">
+      <img src="${p.image}" alt="${p.name}" loading="lazy"
+        onerror="this.style.display='none'">
+      <div class="details">
+        <h3>${p.emoji} ${p.name}</h3>
+        <p class="category">${p.cat} Collection</p>
+        <p class="price">₹${p.price}</p>
+        <a class="shop" href="https://www.google.com/search?q=${encodeURIComponent(p.name+' makeup India')}" target="_blank" rel="noopener noreferrer">Find Product</a>
+      </div>
+    </article>
+  `).join("");
+
+  message.textContent = shown.length ? "" : "No products found. Try another search.";
+}
+
+document.querySelectorAll("[data-cat]").forEach(button => {
+  button.addEventListener("click", () => {
+    selected = button.dataset.cat;
+    document.querySelectorAll("[data-cat]").forEach(b =>
+      b.classList.toggle("active", b === button)
+    );
+    render();
+  });
+});
+
+search.addEventListener("input", render);
+render();
+</script>
+</body>
+</html>
